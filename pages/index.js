@@ -19,8 +19,59 @@ const DUMMY_MEETUPS = [
   },
 ];
 
-function HomePage() {
-  return <MeetupList meetups={DUMMY_MEETUPS} />;
+function HomePage(props) {
+  // const [loadedMeetups, setLoadedMeetups] = useState=([])
+
+  // instead we received props in getStaticProps <---
+  // useEffect(() => {
+  // send a http request and fetch data
+  // setLoadedMeetups(DUMMY_MEETUPS)
+  // }, [])
+
+  return <MeetupList meetups={props.loadedMeetups} />;
+}
+
+// difference with getStaticProps that it will run not only during build process
+// but always on the server after deployment
+// use in case of changing data multiple times such as authentification
+// if not use getStaticProps
+// use only in case if we need req / res object data
+// middleware
+
+// export async function getServerSideProps(context) {
+// request / response object data
+// const req = context.req;
+// const res = context.res;
+
+// fetch data from an API
+
+//   return {
+//     props: {
+//       loadedMeetups: DUMMY_MEETUPS,
+//     },
+//   };
+// }
+
+// data fetching pre-rendering - Static Pages
+// first function to be called on server-side
+// function executed during pre-rendering process, build process
+// props preparation for page
+// code will not be executed on the client-side
+
+// pre-generate HTML file, can be stored and served by CDN
+// faster than pre-generating and fetching data for every incoming request - getServerSideProps
+// because it can be cached and reused instead of generating all the time
+
+export async function getStaticProps() {
+  // fetch data from an API
+
+  return {
+    props: {
+      loadedMeetups: DUMMY_MEETUPS,
+    },
+    // page update seconds
+    revalidate: 10,
+  };
 }
 
 export default HomePage;
