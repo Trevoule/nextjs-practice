@@ -1,7 +1,5 @@
 import { MongoClient, ObjectId } from "mongodb";
-import { Fragment } from "react";
 import MeetupDetail from "../../components/meetups/MeetupDetail";
-import MeetupItem from "../../components/meetups/MeetupItem";
 
 function MeetupDetails(props) {
   return (
@@ -43,7 +41,13 @@ export async function getStaticPaths() {
     // for specific id,
     // and dynamically pre- generates missing when they received
     // false - all supported paths given
-    fallback: false,
+    // true - if new path was added before pre-rendering
+    // 'blocking' - will pre-generate page on demand and then will cache it
+    // true will immediately returns empty page
+    // and then pull down dynamically generated content - handling page with no data
+    // blocking - user will not see anything before data pre-generated
+    // and finish served
+    fallback: 'blocking',
 
     // will be generated automatically
     // from MongoDB
@@ -100,7 +104,6 @@ export async function getStaticProps(context) {
       },
       // meetupData: {
       //   image:
-      //     "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Stadtbild_M%C3%BCnchen.jpg/1280px-Stadtbild_M%C3%BCnchen.jpg",
       //   id: meetupId,
       //   alt: "This is a first meetup!",
       //   title: "First Meetup",

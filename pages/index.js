@@ -1,5 +1,7 @@
+import Head from "next/head";
 import { MongoClient } from "mongodb";
 import MeetupList from "../components/meetups/MeetupList";
+import { Fragment } from "react/cjs/react.production.min";
 
 // const DUMMY_MEETUPS = [
 //   {
@@ -29,7 +31,18 @@ function HomePage(props) {
   // setLoadedMeetups(DUMMY_MEETUPS)
   // }, [])
 
-  return <MeetupList meetups={props.loadedMeetups} />;
+  return (
+    <Fragment>
+      <Head>
+        <title>React Meetups</title>
+        <meta
+          name="description"
+          content="Browse a huge list of active React meetups!"
+        />
+      </Head>
+      <MeetupList meetups={props.loadedMeetups} />
+    </Fragment>
+  );
 }
 
 // difference with getStaticProps that it will run not only during build process
@@ -86,7 +99,7 @@ export async function getStaticProps() {
         address: meetup.address,
         image: meetup.image,
         description: meetup.description,
-        id: meetup._id.toString()
+        id: meetup._id.toString(),
       })),
     },
     // page update seconds
