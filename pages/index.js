@@ -1,23 +1,24 @@
+import { MongoClient } from "mongodb";
 import MeetupList from "../components/meetups/MeetupList";
 
-const DUMMY_MEETUPS = [
-  {
-    id: "m1",
-    title: "A First Meetup",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Stadtbild_M%C3%BCnchen.jpg/1280px-Stadtbild_M%C3%BCnchen.jpg",
-    address: "Some address 5, 12345 Some City",
-    description: "This is a first meetup!",
-  },
-  {
-    id: "m2",
-    title: "A Second Meetup",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Stadtbild_M%C3%BCnchen.jpg/1280px-Stadtbild_M%C3%BCnchen.jpg",
-    address: "Some address 10, 12345 Some City",
-    description: "This is a second meetup!",
-  },
-];
+// const DUMMY_MEETUPS = [
+//   {
+//     id: "m1",
+//     title: "A First Meetup",
+//     image:
+//       "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Stadtbild_M%C3%BCnchen.jpg/1280px-Stadtbild_M%C3%BCnchen.jpg",
+//     address: "Some address 5, 12345 Some City",
+//     description: "This is a first meetup!",
+//   },
+//   {
+//     id: "m2",
+//     title: "A Second Meetup",
+//     image:
+//       "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Stadtbild_M%C3%BCnchen.jpg/1280px-Stadtbild_M%C3%BCnchen.jpg",
+//     address: "Some address 10, 12345 Some City",
+//     description: "This is a second meetup!",
+//   },
+// ];
 
 function HomePage(props) {
   // const [loadedMeetups, setLoadedMeetups] = useState=([])
@@ -64,10 +65,29 @@ function HomePage(props) {
 
 export async function getStaticProps() {
   // fetch data from an API
+  // code will not be exposed on the client
+  const client = await MongoClient.connect(
+    "mongodb+srv://mongo_test:mongodb@cluster0.cfxnj.mongodb.net/meetups?retryWrites=true&w=majority"
+  );
+
+  const db = client.db();
+
+  const meetupsCollection = db.collection("meetups");
+
+  const meetups = await meetupsCollection.find().toArray();
+
+  // close connection mongodb
+  client.close();
 
   return {
     props: {
-      loadedMeetups: DUMMY_MEETUPS,
+      loadedMeetups: meetups.map((meetup) => ({
+        title: meetup.title,
+        address: meetup.address,
+        image: meetup.image,
+        description: meetup.description,
+        id: meetup._id.toString()
+      })),
     },
     // page update seconds
     revalidate: 10,
